@@ -1,0 +1,13 @@
+{
+  "name": "SE3309-Assignment-4",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "*",
+    "express": "3.2.6",
+    "mysql": "^2.5.3"
+  }
+}
