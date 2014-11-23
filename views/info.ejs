@@ -77,8 +77,35 @@
 		      <input type="password" class="form-control" id="inputPassword" name="password" value="<%= user.password %>">
 		    </div>
 		    
-		    <button type="submit" class="btn btn-default">Submit</button>
+		    <button type="submit" class="btn btn-default">Submit Changes</button>
+		    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-account">
+  				Delete this account?
+			</button>
 		  </form>
+		  
+		  <div class="modal fade" id="delete-account" tabindex="-1" role="dialog" aria-labelledby="delete-account-label" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			        <h4 class="modal-title" id="delete-account-label">Delete Your Account</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>
+			            Are you sure you want to delete this account? All of the information regarding your
+			            bills, location, meter, and meter readings will also be deleted!
+			        </p> 
+			        <p>This action cannot be undone!</p>
+			      </div>
+			      <div class="modal-footer">
+			        <form role="form" method="get" action="/delete_account">
+			            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			            <input type="submit" class="btn btn-danger" value="Delete Account"/>
+			        </form>
+			      </div>
+			    </div>
+			  </div>
+			</div>
 	    </div>
 	  </div>
     </div>

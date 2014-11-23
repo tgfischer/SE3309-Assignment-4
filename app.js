@@ -193,6 +193,20 @@ app.post('/info', function(req, res) {
 	});
 });
 
+app.get('/delete_account', function(req, res) {
+	// 'Cannot delete or update a parent row: a foreign key constraint fails'
+	// I think we need to delete from BillArchive before we delete the account
+	var query = "DELETE FROM accounts " +
+				"WHERE accountID=" + currentUser.accountID;
+	
+	connection.query(query, function(err, rows) {
+		if (err) throw err;
+		
+		currentUser = null;
+		res.redirect('/login');
+	});
+});
+
 
 app.get('/', routes.index);
 app.get('/users', user.list);
