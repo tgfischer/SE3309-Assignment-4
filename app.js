@@ -103,8 +103,7 @@ app.get('/unpaid_bills', function(req, res) {
 app.post('/pay_bills', function(req, res) {
 	console.log(req.body.row);
 	var query = 'UPDATE billArchive SET status="Paid" ' +
-				'WHERE billID = ' + req.body.row.billID + ' ' +
-				'ORDER BY billArchive.dueDate';
+				'WHERE billID = ' + req.body.row.billID;
 	
 	connection.query(query, function(err, rows) {
 		if (err) throw err;
@@ -144,6 +143,53 @@ app.post('/get_readings', function(req, res) {
 		if (err) throw err;
 		
 		res.send(rows);
+	});
+});
+
+app.get('/info', function(req, res) {
+	res.render('info', {
+		user: currentUser
+	});
+});
+
+app.post('/info', function(req, res) {
+	var selectQuery = "SELECT * " +
+	                  "FROM accounts " +
+	                  "WHERE name=" + connection.escape(req.body.email);
+	
+	console.log(selectQuery);
+	
+	connection.query(selectQuery, function(err, rows) {
+		if (req.body.email != currentUser.email || rows.length == 0) {
+			var updateQuery = "UPDATE accounts SET " +
+			                  	  "name=" + connection.escape(req.body.name) + ", " +
+			                  	  "phone=" + req.body.phone + ", " +
+			                  	  "email=" + connection.escape(req.body.email) + ", " +
+			                  	  "password=" + connection.escape(req.body.password) + " " +
+			                  "WHERE accountID=" + currentUser.accountID;
+			
+			connection.query(updateQuery, function(err, rows) {
+				if (err) throw err;
+				
+				var getUpdatedUser = "SELECT * FROM accounts WHERE accountID=" + currentUser.accountID;
+				
+				connection.query(getUpdatedUser, function(err, rows) {
+					if (err) throw err;
+					
+					console.log(rows[0]);
+					
+					currentUser = rows[0];
+					
+					res.render('dashboard', {
+						user: currentUser
+					});
+				});
+			});
+		} else {
+			res.render('info', {
+				user: currentUser
+			});
+		}
 	});
 });
 
