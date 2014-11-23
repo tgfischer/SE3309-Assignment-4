@@ -12,9 +12,12 @@
 
     <!-- Bootstrap core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="//cdn.datatables.net/tabletools/2.2.3/css/dataTables.tableTools.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/table.css' />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -48,28 +51,14 @@
     <!-- Begin page content -->
     <div class="container">
       <div class="page-header">
-        <h1>Ontario's Green Button</h1>
+        <h1><%= user.name %>'s Unpaid Bills</h1>
       </div>
-      <p class="lead">Welcome to your Ontario's Green Button dashboard!</p>
+      <p class="lead">
+        Here is a list of all of your unpaid bills. Click on a row to pay off a bill!
+      </p>
       
-      <div class="list-group">
-        <a href="#" class="list-group-item">
-          <h4 class="list-group-item-heading">View your consumption data</h4>
-          <p class="list-group-item-text">Choose this option to view your personal consumption data, sorted by month</p>
-        </a>
-        <a href="#" class="list-group-item">
-          <h4 class="list-group-item-heading">Update personal information</h4>
-          <p class="list-group-item-text">Choose this option to update your personal information</p>
-        </a>
-        <a href="#" class="list-group-item">
-          <h4 class="list-group-item-heading">Update personal information</h4>
-          <p class="list-group-item-text">Choose this option to update your personal information</p>
-        </a>
-  	    <a href="/pay_bills" class="list-group-item">
-          <h4 class="list-group-item-heading">View unpaid bills</h4>
-          <p class="list-group-item-text">Choose this option to view your unpaid bills, and choose which ones you want to pay</p>
-        </a>
-      </div>
+      <table cellpadding="0" cellspacing="0" border="0" class="display" id="unpaid-bills">
+      </table>
     </div>
 
     <footer class="footer">
@@ -84,5 +73,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
+    <script src="/scripts/pay_bills.js"></script>
   </body>
 </html>

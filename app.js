@@ -73,7 +73,44 @@ app.get('/dashboard', function(req, res) {
 
 app.get('/logout', function(req, res) {
 	currentUser = null;
-	res.redirect('login')
+	res.redirect('login');
+});
+
+app.get('/pay_bills', function(req, res) {
+	res.render('pay_bills', {
+		user: currentUser
+	});
+});
+
+app.get('/unpaid_bills', function(req, res) {
+	var query = 'SELECT billArchive.billID, ' +
+		               'billArchive.status, ' +
+		               'DATE_FORMAT(billArchive.startPeriod, "%W, %e %M %Y") AS startPeriod, ' +
+		               'DATE_FORMAT(billArchive.endPeriod, "%W, %e %M %Y") AS endPeriod, ' +
+		               'billArchive.amountDue, ' + 
+		               'DATE_FORMAT(billArchive.dueDate, "%W, %e %M %Y") AS dueDate ' +
+				'FROM billArchive INNER JOIN accounts ON billArchive.accountID = accounts.accountID ' +
+				'WHERE accounts.accountID = ' + currentUser.accountID + ' AND billArchive.status = "Unpaid" ' +
+				'ORDER BY billArchive.dueDate';
+	
+	connection.query(query, function(err, rows) {
+		if (err) throw err;
+		
+		res.json(rows);
+	});
+});
+
+app.post('/pay_bills', function(req, res) {
+	console.log(req.body.row);
+	var query = 'UPDATE billArchive SET status="Paid" ' +
+				'WHERE billID = ' + req.body.row.billID + ' ' +
+				'ORDER BY billArchive.dueDate';
+	
+	connection.query(query, function(err, rows) {
+		if (err) throw err;
+		
+		res.send({ redirect: '/pay_bills' });
+	});
 });
 
 app.get('/', routes.index);
