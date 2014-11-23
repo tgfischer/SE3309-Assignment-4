@@ -1,6 +1,5 @@
 $(document).ready(function() {
-	var table;
-	
+	// I'll try to make this code not suck if I have time
     $.ajax({
         url: "unpaid_bills",
         type: "GET",
@@ -26,7 +25,6 @@ $(document).ready(function() {
             		url: "",
                     type: "POST",
                     dataType: "json",
-                    jsonp: false,
                     cache: true,
                     data: { 
                     	row: data

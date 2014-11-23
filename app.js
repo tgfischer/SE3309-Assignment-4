@@ -113,6 +113,41 @@ app.post('/pay_bills', function(req, res) {
 	});
 });
 
+app.get('/view_data', function(req, res) {
+	res.render('view_data', {
+		user: currentUser
+	});
+});
+
+app.post('/get_readings', function(req, res) {
+	var query;
+	
+	if (req.body.monthly == 'false') {
+		query = "SELECT DATE_FORMAT(meterReadings.startPeriod, '%W, %e %M %Y') AS 'day', " + 
+		               "meterReadings.meterReading AS 'reading' " +
+		        "FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
+		                            "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
+		        "WHERE accounts.accountID = " + currentUser.accountID + " " +
+		        "ORDER BY meterReadings.startPeriod";
+	} else {
+		query = "SELECT MONTHNAME(meterReadings.startPeriod) AS 'month', " + 
+        			   "YEAR(meterReadings.startPeriod) AS 'year', " + 
+    			       "AVG(meterReadings.meterReading) AS 'reading'" +
+    			"FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
+                                    "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
+                "WHERE accounts.accountID = " + currentUser.accountID + " " +
+    			"GROUP BY MONTHNAME(meterReadings.startPeriod), YEAR(meterReadings.startPeriod) " +
+    			"ORDER BY MONTHNAME(startPeriod), YEAR(meterReadings.startPeriod)";
+	}
+	
+	connection.query(query, function(err, rows) {
+		if (err) throw err;
+		
+		res.send(rows);
+	});
+});
+
+
 app.get('/', routes.index);
 app.get('/users', user.list);
 
