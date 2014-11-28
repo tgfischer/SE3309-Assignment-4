@@ -131,7 +131,9 @@ app.post('/get_readings', function(req, res) {
 	} else {
 		query = "SELECT MONTHNAME(meterReadings.startPeriod) AS 'month', " + 
         			   "YEAR(meterReadings.startPeriod) AS 'year', " + 
-    			       "AVG(meterReadings.meterReading) AS 'reading'" +
+    			       "AVG(meterReadings.meterReading) AS 'reading' , " +
+    			       "(SELECT AVG(meterReading) FROM meterReadings WHERE MONTHNAME(startPeriod) = 'month' " +
+    			       "AND YEAR(startPeriod) = 'year') AS 'avg')"
     			"FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
                                     "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
                 "WHERE accounts.accountID = " + currentUser.accountID + " " +
@@ -205,6 +207,10 @@ app.get('/delete_account', function(req, res) {
 		currentUser = null;
 		res.redirect('/login');
 	});
+});
+
+app.post('/view_data_timespan', function(req, res) {
+	
 });
 
 
