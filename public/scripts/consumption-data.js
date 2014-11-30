@@ -12,8 +12,10 @@ $(document).ready(function() {
         		data: data,
                 columns: [
                     { data: "day", sTitle: "Day", sClass: "center" },
-                    { data: "reading", sTitle: "Meter Reading", sClass: "center" }
-                ]
+                    { data: "reading", sTitle: "Your Meter Reading", sClass: "center" }
+                ],
+                bSort : false,
+                bFilter : false
             });
 		},
         error: function (jqXHR, textStatus, errorThrown) {
@@ -37,8 +39,11 @@ $(document).ready(function() {
                 columns: [
                     { data: "month", sTitle: "Month", sClass: "center" },
                     { data: "year", sTitle: "Year", sClass: "center" },
-                    { data: "reading", sTitle: "Total Monthly Reading", sClass: "center" },
-                ]
+                    { data: "reading", sTitle: "Your Average Monthly Reading", sClass: "center" },
+                    { data: "avg", sTitle: "Total Average Monthly Reading", sClass: "center" }
+                ],
+                bSort : false,
+                bFilter : false
             });
 		},
         error: function (jqXHR, textStatus, errorThrown) {

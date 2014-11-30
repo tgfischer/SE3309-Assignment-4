@@ -132,13 +132,13 @@ app.post('/get_readings', function(req, res) {
 		query = "SELECT MONTHNAME(meterReadings.startPeriod) AS 'month', " + 
         			   "YEAR(meterReadings.startPeriod) AS 'year', " + 
     			       "AVG(meterReadings.meterReading) AS 'reading' , " +
-    			       "(SELECT AVG(meterReading) FROM meterReadings WHERE MONTHNAME(startPeriod) = 'month' " +
-    			       "AND YEAR(startPeriod) = 'year') AS 'avg')"
+    			       "(SELECT AVG(meterReading) FROM meterReadings " +
+                       "WHERE MONTHNAME(startPeriod) = month AND YEAR(startPeriod) = year) AS 'avg'" +
     			"FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
                                     "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
                 "WHERE accounts.accountID = " + currentUser.accountID + " " +
     			"GROUP BY MONTHNAME(meterReadings.startPeriod), YEAR(meterReadings.startPeriod) " +
-    			"ORDER BY MONTHNAME(startPeriod), YEAR(meterReadings.startPeriod)";
+    			"ORDER BY meterReadings.startPeriod";
 	}
 	
 	connection.query(query, function(err, rows) {
@@ -196,21 +196,55 @@ app.post('/info', function(req, res) {
 });
 
 app.get('/delete_account', function(req, res) {
-	// 'Cannot delete or update a parent row: a foreign key constraint fails'
-	// I think we need to delete from BillArchive before we delete the account
-	var query = "DELETE FROM accounts " +
-				"WHERE accountID=" + currentUser.accountID;
+	var query = "DELETE FROM meterReadings " +
+	            "WHERE meterID=(" + 
+	            "SELECT meters.meterID FROM meters INNER JOIN accounts ON meters.meterID=accounts.meterID " +
+	            "WHERE accounts.accountID=" + currentUser.accountID + ")";
 	
 	connection.query(query, function(err, rows) {
 		if (err) throw err;
 		
-		currentUser = null;
-		res.redirect('/login');
+		var query = "DELETE FROM billArchive " +
+        "WHERE accountID=" + currentUser.accountID;
+
+		connection.query(query, function(err, rows) {
+			if (err) throw err;
+		
+			query = "DELETE FROM accounts " +
+					"WHERE accountID=" + currentUser.accountID;
+	
+			connection.query(query, function(err, rows) {
+				if (err) throw err;
+			
+				currentUser = null;
+				res.redirect('/login');
+			});
+		});
+	});
+});
+
+app.get('/view_data_timespan/:start/:end', function(req, res) {
+	res.render('view_data_timespan', {
+		user: currentUser,
+		start: req.params.start,
+		end: req.params.end
 	});
 });
 
 app.post('/view_data_timespan', function(req, res) {
+	var query = "SELECT DATE_FORMAT(meterReadings.startPeriod, '%W, %e %M %Y') AS 'day', " +
+	                   "meterReadings.meterReading AS 'reading', " +
+	                   "meterReadings * 0.12 AS 'price' " +
+	            "FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
+                                    "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
+                "WHERE accounts.accountID = " + currentUser.accountID + " " +
+                "ORDER BY meterReadings.startPeriod";
 	
+	connection.query(query, function(err, rows) {
+		if (err) throw err;
+		
+		res.send(rows);
+	});
 });
 
 
