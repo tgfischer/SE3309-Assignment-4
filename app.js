@@ -196,30 +196,16 @@ app.post('/info', function(req, res) {
 });
 
 app.get('/delete_account', function(req, res) {
-	var query = "DELETE FROM meterReadings " +
-	            "WHERE meterID=(" + 
-	            "SELECT meters.meterID FROM meters INNER JOIN accounts ON meters.meterID=accounts.meterID " +
-	            "WHERE accounts.accountID=" + currentUser.accountID + ")";
+	var query = "DELETE FROM addresses " +
+	            "WHERE addressID IN (" + 
+	            	"SELECT addressID FROM meters INNER JOIN accounts ON meters.meterID=accounts.meterID " +
+	            	"WHERE accounts.accountID=" + currentUser.accountID + ")";
 	
 	connection.query(query, function(err, rows) {
 		if (err) throw err;
-		
-		var query = "DELETE FROM billArchive " +
-        "WHERE accountID=" + currentUser.accountID;
-
-		connection.query(query, function(err, rows) {
-			if (err) throw err;
-		
-			query = "DELETE FROM accounts " +
-					"WHERE accountID=" + currentUser.accountID;
 	
-			connection.query(query, function(err, rows) {
-				if (err) throw err;
-			
-				currentUser = null;
-				res.redirect('/login');
-			});
-		});
+		currentUser = null;
+		res.redirect('/login');
 	});
 });
 
@@ -237,7 +223,11 @@ app.post('/view_data_timespan', function(req, res) {
 	                   "meterReadings * 0.12 AS 'price' " +
 	            "FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
                                     "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
-                "WHERE accounts.accountID = " + currentUser.accountID + " " +
+                                    "WHERE accounts.accountID = " + currentUser.accountID + "AND "+
+                                    "( meterReadings.startDate = CONVERT (DATETIME, RIGHT( "
+                                    + startDate + ", 4) + LEFT (" + startDate + ", 2 + SUBSTRING ( " + 
+                                    startDate + ", 2, 3)) AND meterReadings.endDate = CONVERT (DATETIME, RIGHT( " + 
+                                    endDate + ", 4) + LEFT (" + endDate + ", 2 + SUBSTRING ( " + endDate + ", 2, 3)));"
                 "ORDER BY meterReadings.startPeriod";
 	
 	connection.query(query, function(err, rows) {
