@@ -52,36 +52,17 @@
     <div class="container">
       <div class="page-header">
         <!-- put that thing with the ejs back here -->
-        <h1><%= user.name %>'s Consumption Data By Period </h1>
+        <h1><%= user.name %>'s Consumption Data ></h1>
       </div>
       <p class="lead">
-        Please enter a start date and end date to view your data usage by:
+        Here is a list of your meter readings between <%= startDate %> and 
       </p>
-      
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <form role="form"> 
-            <div class="form-group">
-              <label for="startDate">Start Date</label>
-              <input class="form-control" type="date" placeholder ="yyyy-mm-dd" id="startDate" name="startDate">
-            </div> 
-            <div class="form-group">
-              <label for="endDate">End Date</label>
-              <input class="form-control" type="date" placeholder="yyyy-mm-dd" id="endDate" name="endDate">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button action= "/view_data_timespan" id = "viewDataBtn" type="button" class="btn btn-primary">View Data</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
+    
       <table cellpadding="0" cellspacing="0" border="0" class="display" id="readings">
         <!-- this is where we put the readings when you sort for certain dates !!! -->
       </table>
-
     </div>
+    
 
     <footer class="footer">
       <div class="container">
@@ -97,7 +78,6 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script src="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
     <script src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
-    <script src="/scripts/view_data_timespan.js"></script>
-
+    <script src="/scripts/view_data_timespan2.js"></script>
   </body>
 </html>

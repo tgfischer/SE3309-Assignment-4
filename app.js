@@ -27,8 +27,8 @@ var connection = mysql.createConnection({
 	host: '127.0.0.1',
 	port: '3306',
 	user: 'root',
-	password: 'western_u',
-	database: 'greenButtonDB',
+	password: 'Hockey10!',
+	database: 'adam',
 	debug: false
 });
 
@@ -90,8 +90,7 @@ app.get('/unpaid_bills', function(req, res) {
 		               'billArchive.amountDue, ' + 
 		               'DATE_FORMAT(billArchive.dueDate, "%W, %e %M %Y") AS dueDate ' +
 				'FROM billArchive INNER JOIN accounts ON billArchive.accountID = accounts.accountID ' +
-				'WHERE accounts.accountID = ' + currentUser.accountID + ' AND billArchive.status = "Unpaid" ' +
-				'ORDER BY billArchive.dueDate';
+				'WHERE accounts.accountID = ' + currentUser.accountID;
 	
 	connection.query(query, function(err, rows) {
 		if (err) throw err;
@@ -209,27 +208,32 @@ app.get('/delete_account', function(req, res) {
 	});
 });
 
-app.get('/view_data_timespan/:start/:end', function(req, res) {
+app.get('/view_data_timespan', function(req, res) {
 	res.render('view_data_timespan', {
-		user: currentUser,
-		start: req.params.start,
-		end: req.params.end
+		user:currentUser
 	});
 });
 
+/* This isn't used anymore...
+app.post('/view_data_timespan/:startdate/:enddate', function(req, res) {
+	res.render('view_data_timespan', {
+		// this calls back to view data timespan and now we can do a query based on the start date (also need to pass end date)
+		user: currentUser,
+		startDate: req.params.startdate,
+		endDate: req.params.enddate
+	});
+}); */
+
+// For the query, Tom will have to change all the instances of the meterreadings table to be meterReadings
 app.post('/view_data_timespan', function(req, res) {
-	var query = "SELECT DATE_FORMAT(meterReadings.startPeriod, '%W, %e %M %Y') AS 'day', " +
-	                   "meterReadings.meterReading AS 'reading', " +
-	                   "meterReadings * 0.12 AS 'price' " +
-	            "FROM (meterReadings INNER JOIN meters ON meterReadings.meterID = meters.meterID) " +
-                                    "INNER JOIN accounts ON meters.meterID = accounts.meterID " +
-                                    "WHERE accounts.accountID = " + currentUser.accountID + "AND "+
-                                    "( meterReadings.startDate = CONVERT (DATETIME, RIGHT( "
-                                    + startDate + ", 4) + LEFT (" + startDate + ", 2 + SUBSTRING ( " + 
-                                    startDate + ", 2, 3)) AND meterReadings.endDate = CONVERT (DATETIME, RIGHT( " + 
-                                    endDate + ", 4) + LEFT (" + endDate + ", 2 + SUBSTRING ( " + endDate + ", 2, 3)));"
-                "ORDER BY meterReadings.startPeriod";
+	var query = "SELECT DATE_FORMAT(meterreadings.startPeriod, '%W, %e %M %Y') AS 'day', meterreadings.meterReading AS 'reading', meterReading * 0.12 AS 'price' " +
+	            "FROM (meterreadings INNER JOIN meters ON meterreadings.meterID = meters.meterID) INNER JOIN accounts ON meters.meterID = accounts.meterID " +
+                "WHERE accounts.accountID = " + currentUser.accountID + 
+                	" AND (meterreadings.startPeriod >= (SELECT STR_TO_DATE('" + req.body.start + " 00:00:00', '%Y-%m-%d')) " +
+                		"AND (meterreadings.startPeriod <= (SELECT STR_TO_DATE('" + req.body.end + " 23:59:59', '%Y-%m-%d')))) " + 
+               	"ORDER BY meterreadings.startPeriod;"; 
 	
+	console.log(query); 
 	connection.query(query, function(err, rows) {
 		if (err) throw err;
 		
