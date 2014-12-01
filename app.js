@@ -90,7 +90,7 @@ app.get('/unpaid_bills', function(req, res) {
 		               'billArchive.amountDue, ' + 
 		               'DATE_FORMAT(billArchive.dueDate, "%W, %e %M %Y") AS dueDate ' +
 				'FROM billArchive INNER JOIN accounts ON billArchive.accountID = accounts.accountID ' +
-				'WHERE accounts.accountID = ' + currentUser.accountID;
+				'WHERE accounts.accountID = ' + currentUser.accountID + ' AND billArchive.status = "Unpaid"';
 	
 	connection.query(query, function(err, rows) {
 		if (err) throw err;

@@ -1,5 +1,17 @@
 $(document).ready(function() {
 
+    var table = $("#readings").DataTable({ 
+        data: null,
+        columns: [
+            { data: "day", sTitle: "Day", sClass: "center" },
+            { data: "reading", sTitle: "Your Meter Reading", sClass: "center" },
+            { data: "price", sTitle: "Price", sClass: "center"}
+        ],
+                
+        bSort : false,
+        bFilter : false
+    }); 
+
     $("#viewDataBtn").click( function () {
         
         var startDate = $("input#startDate").val(); 
@@ -17,7 +29,13 @@ $(document).ready(function() {
             }, 
             success: function (data) { 
                 console.log(data);
-                $("#readings").dataTable({
+
+                table.clear();
+                table.rows.add(data).draw();
+
+
+                /*
+                $("#readings").dataTable(
                     data: data,
                     columns: [
                         { data: "day", sTitle: "Day", sClass: "center" },
@@ -27,7 +45,7 @@ $(document).ready(function() {
                 
                     bSort : false,
                     bFilter : false
-                });
+                }); */
             }, 
             error: function (jqXHR, textStatus, errorThrown) {
                 if (typeof errorFn !== 'undefined') {
